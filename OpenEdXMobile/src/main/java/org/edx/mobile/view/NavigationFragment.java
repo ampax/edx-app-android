@@ -24,6 +24,7 @@ import org.edx.mobile.BuildConfig;
 import org.edx.mobile.R;
 import org.edx.mobile.base.BaseFragment;
 import org.edx.mobile.base.BaseFragmentActivity;
+import org.edx.mobile.base.MainApplication;
 import org.edx.mobile.core.IEdxEnvironment;
 import org.edx.mobile.databinding.DrawerNavigationBinding;
 import org.edx.mobile.event.AccountDataLoadedEvent;
@@ -42,6 +43,7 @@ import org.edx.mobile.user.UserService;
 import org.edx.mobile.util.Config;
 import org.edx.mobile.util.EmailUtil;
 import org.edx.mobile.util.ResourceUtil;
+import org.edx.mobile.util.SecurityUtil;
 import org.edx.mobile.view.common.TaskProgressCallback;
 import org.edx.mobile.view.my_videos.MyVideosActivity;
 
@@ -247,6 +249,7 @@ public class NavigationFragment extends BaseFragment {
             @Override
             public void onClick(View v) {
                 environment.getRouter().forceLogout(getActivity(), environment.getSegment(), environment.getNotificationDelegate());
+                SecurityUtil.clearUserData(MainApplication.application);
             }
         });
 
