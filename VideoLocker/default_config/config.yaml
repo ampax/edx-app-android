@@ -1,5 +1,9 @@
-API_HOST_URL: 'http://10.0.2.2:8000' # localhost is 10.0.2.2 in Android
-ENVIRONMENT_DISPLAY_NAME: 'Localhost'
-PLATFORM_NAME: 'Your platform name here'
-PLATFORM_DESTINATION_NAME: 'example.com'
-FEEDBACK_EMAIL_ADDRESS: 'support@example.com'
+API_HOST_URL: 'https://edlynx.org' # localhost is 10.0.2.2 in Android
+ENVIRONMENT_DISPLAY_NAME: 'EdLynX'
+PLATFORM_NAME: 'EdLynX'
+PLATFORM_DESTINATION_NAME: 'edlynx.org'
+FEEDBACK_EMAIL_ADDRESS: 'admin@edlynx.org'
+COURSE_ENROLLMENT:
+    ENABLED: false
+    EXTERNAL_COURSE_SEARCH_URL: 'https://edlynx.org/courses'
+OAUTH_CLIENT_ID: '3693eb43569039439baa'

@@ -1275,23 +1275,23 @@
         "defaultValue": "",
         "instructions": "",
         "type": "textarea",
-        "label": "Tell us why you're interested in edX"
+        "label": "Tell us why you're interested in edLynX"
     }, {
         "restrictions": {},
         "required": true,
         "name": "honor_code",
         "errorMessages": {
-            "required": "You must agree to the edX <a href=\"https://www.edx.org/terms\">Terms of Service and Honor Code</a>."
+            "required": "You must agree to the edLynX <a href=\"https://www.edlynx.org/terms\">Terms of Service and Honor Code</a>."
         },
         "agreement" : {
             "url" : "edxapp://show_eula",
-            "text" : "edX Terms of Service and Honor Code"
+            "text" : "edLynX Terms of Service and Honor Code"
         },
         "placeholder" : "",
         "defaultValue": false,
         "instructions": "",
         "type": "checkbox",
-        "label": "I agree to the edX <a href=\"https://www.edx.org/terms\">Terms of Service and Honor Code</a>."
+        "label": "I agree to the edLynX <a href=\"https://www.edlynx.org/terms\">Terms of Service and Honor Code</a>."
     }],
     "method": "post"
 }
