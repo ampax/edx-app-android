@@ -226,6 +226,10 @@ public class PrefManager {
         public static final String FEATURES = "features";
         public static final String APP_INFO = "pref_app_info";
         public static final String USER_PREF = "pref_user";
+
+        public static String[] getAll() {
+            return new String[]{LOGIN, WIFI, VIDEOS, FEATURES, APP_INFO, USER_PREF};
+        }
     }
 
     /**
@@ -264,5 +268,12 @@ public class PrefManager {
          */
         public static final String BACKEND_FACEBOOK = "facebook";
         public static final String BACKEND_GOOGLE = "google-oauth2";
+    }
+
+    public static void nukeSharedPreferences() {
+        for (String prefName : Pref.getAll()) {
+            MainApplication.application.getSharedPreferences(
+                    prefName, Context.MODE_PRIVATE).edit().clear().apply();
+        }
     }
 }
