@@ -31,11 +31,9 @@ public class TranscriptManager {
     @Inject
     public TranscriptManager(Context context) {
         this.context = context;
-        File videosDir = new File(context.getExternalFilesDir(null).getParent(), AppConstants.Folders.VIDEOS);
-        transcriptFolder = new File(videosDir, AppConstants.Folders.SUBTITLES);
-        if (!transcriptFolder.exists()) {
-            transcriptFolder.mkdirs();
-        }
+        File videosDir = new File(context.getExternalFilesDir(null).getParent(), AppConstants.Directories.VIDEOS);
+        transcriptFolder = new File(videosDir, AppConstants.Directories.SUBTITLES);
+        transcriptFolder.mkdirs();
     }
 
     /**

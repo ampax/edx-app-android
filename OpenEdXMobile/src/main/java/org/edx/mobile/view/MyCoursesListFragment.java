@@ -28,7 +28,6 @@ import org.edx.mobile.logger.Logger;
 import org.edx.mobile.model.api.EnrolledCoursesResponse;
 import org.edx.mobile.module.analytics.ISegment;
 import org.edx.mobile.module.prefs.LoginPrefs;
-import org.edx.mobile.module.prefs.PrefManager;
 import org.edx.mobile.task.RestoreVideosCacheDataTask;
 import org.edx.mobile.util.NetworkUtil;
 import org.edx.mobile.util.ViewAnimationUtil;
@@ -74,10 +73,7 @@ public class MyCoursesListFragment extends BaseFragment implements NetworkObserv
         EventBus.getDefault().register(this);
 
         // Restore cache of the courses for which the user has downloaded any videos
-        PrefManager.UserPrefManager prefs = new PrefManager.UserPrefManager(MainApplication.application);
-        if (!prefs.isVideosCacheRestored()) {
-            new RestoreVideosCacheDataTask(MainApplication.application).execute();
-        }
+        RestoreVideosCacheDataTask.executeInstanceIfNeeded(MainApplication.application);
     }
 
     @Override

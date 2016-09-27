@@ -27,7 +27,7 @@ public class Sha1Util {
         }
     }
 
-    private static String convertToHex(@NonNull byte[] data) {
+    public static String convertToHex(@NonNull byte[] data) {
         StringBuilder buf = new StringBuilder();
         for (byte b : data) {
             int halfbyte = (b >>> 4) & 0x0F;

@@ -9,6 +9,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 import org.edx.mobile.logger.Logger;
 import org.edx.mobile.module.db.DbStructure;
 import org.edx.mobile.util.AppConstants;
+import org.edx.mobile.util.FileUtil;
 import org.edx.mobile.util.Sha1Util;
 
 import java.io.File;
@@ -21,12 +22,12 @@ import java.io.File;
  */
 class DbHelper extends SQLiteOpenHelper {
     private SQLiteDatabase sqliteDb;
-    private Context mContext;
+    private Context context;
     protected final Logger logger = new Logger(getClass().getName());
 
     public DbHelper(Context context) {
         super(context, DbStructure.NAME, null, DbStructure.VERSION);
-        mContext = context;
+        this.context = context;
     }
 
     @Override
@@ -121,45 +122,46 @@ class DbHelper extends SQLiteOpenHelper {
                         new String[]{DbStructure.Column.ID, DbStructure.Column.USERNAME,
                                 DbStructure.Column.FILEPATH}, null, null, null, null, null, null);
                 if (cursor != null) {
-                    final File appExternalDir = mContext.getExternalFilesDir(null).getParentFile();
+                    final File appExternalDir = FileUtil.getAppExternalDir(context);
                     try {
                         while (cursor.moveToNext()) {
-                            final int id = cursor.getInt(0);
+                            final String id = cursor.getString(0);
                             final String username = cursor.getString(1);
                             final String filePath = cursor.getString(2);
                             final String encryptedUsername = Sha1Util.SHA1(username);
                             final String newFilePath = filePath.replace(
                                     appExternalDir.getAbsolutePath() + "/" + username,
                                     appExternalDir.getAbsolutePath() + "/"
-                                            + AppConstants.Folders.VIDEOS + "/"
+                                            + AppConstants.Directories.VIDEOS + "/"
                                             + encryptedUsername);
 
-                            // First update the folder names
-                            final File previousFolder = new File(appExternalDir, username);
-                            if (previousFolder.exists()) {
-                                final File newFolder = new File(appExternalDir,
-                                        AppConstants.Folders.VIDEOS + "/" + encryptedUsername);
-                                if (!newFolder.exists()) newFolder.mkdirs();
-                                previousFolder.renameTo(newFolder);
+                            // First update the directory name along with its whole path
+                            final File previousDir = new File(appExternalDir, username);
+                            if (previousDir.exists()) {
+                                final File newDir = new File(appExternalDir,
+                                        AppConstants.Directories.VIDEOS + "/" + encryptedUsername);
+                                if (!newDir.exists()) newDir.mkdirs();
+                                previousDir.renameTo(newDir);
                             }
 
-                            // Then update the database rows
+                            // Then update the database row
                             final ContentValues updatedValues = new ContentValues();
                             updatedValues.put(DbStructure.Column.USERNAME, encryptedUsername);
                             updatedValues.put(DbStructure.Column.FILEPATH, newFilePath);
                             db.update(DbStructure.Table.DOWNLOADS, updatedValues,
-                                    DbStructure.Column.ID + "=" + id, null);
+                                    DbStructure.Column.ID + "= ?", new String[]{id});
                         }
                     } finally {
                         cursor.close();
                     }
-                    // Now migrate the subtitles folder
-                    final File previousSrtFolder = new File(appExternalDir, "srtFolder");
-                    if (previousSrtFolder.exists()) {
-                        final File newSrtFolder = new File(appExternalDir,
-                                AppConstants.Folders.VIDEOS + "/" + AppConstants.Folders.SUBTITLES);
-                        if (!newSrtFolder.exists()) newSrtFolder.mkdirs();
-                        previousSrtFolder.renameTo(newSrtFolder);
+
+                    // Now migrate the subtitles directory
+                    final File previousSrtDir = new File(appExternalDir, "srtFolder");
+                    if (previousSrtDir.exists()) {
+                        final File newSrtDir = new File(appExternalDir,
+                                AppConstants.Directories.VIDEOS + "/" + AppConstants.Directories.SUBTITLES);
+                        newSrtDir.mkdirs();
+                        previousSrtDir.renameTo(newSrtDir);
                     }
                 }
             }

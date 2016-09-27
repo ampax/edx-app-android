@@ -53,13 +53,11 @@ public class UserPrefs {
      */
     public File getDownloadFolder() {
         ProfileModel profile = getProfile();
-        File videosDir = new File(context.getExternalFilesDir(null).getParent(), AppConstants.Folders.VIDEOS);
-        File usersVidDir = new File(videosDir, Sha1Util.SHA1(profile.username));
-        if (!usersVidDir.exists()) {
-            usersVidDir.mkdirs();
-        }
+        File videosDir = new File(context.getExternalFilesDir(null).getParent(), AppConstants.Directories.VIDEOS);
+        File usersVidsDir = new File(videosDir, Sha1Util.SHA1(profile.username));
+        usersVidsDir.mkdirs();
         try {
-            File noMediaFile = new File(usersVidDir, ".nomedia");
+            File noMediaFile = new File(usersVidsDir, ".nomedia");
             if (!noMediaFile.exists()) {
                 noMediaFile.createNewFile();
             }
@@ -67,7 +65,7 @@ public class UserPrefs {
             logger.error(ioException);
         }
 
-        return usersVidDir;
+        return usersVidsDir;
     }
 
     @Nullable

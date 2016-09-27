@@ -5,6 +5,7 @@ import android.support.annotation.NonNull;
 
 import com.google.inject.Inject;
 
+import org.edx.mobile.base.MainApplication;
 import org.edx.mobile.core.EdxEnvironment;
 import org.edx.mobile.http.OkHttpUtil;
 import org.edx.mobile.module.prefs.PrefManager;
@@ -15,8 +16,15 @@ public class RestoreVideosCacheDataTask extends Task<Void> {
     @Inject
     private EdxEnvironment environment;
 
-    public RestoreVideosCacheDataTask(@NonNull Context context) {
+    private RestoreVideosCacheDataTask(@NonNull Context context) {
         super(context);
+    }
+
+    public static void executeInstanceIfNeeded(@NonNull Context context) {
+        PrefManager.UserPrefManager prefs = new PrefManager.UserPrefManager(MainApplication.application);
+        if (!prefs.isVideosCacheRestored()) {
+            new RestoreVideosCacheDataTask(context).execute();
+        }
     }
 
     @Override
@@ -30,7 +38,6 @@ public class RestoreVideosCacheDataTask extends Task<Void> {
 
     @Override
     protected void onSuccess(Void aVoid) throws Exception {
-        super.onSuccess(aVoid);
         PrefManager.UserPrefManager prefManager = new PrefManager.UserPrefManager(context);
         prefManager.setIsVideosCacheRestored(true);
     }

@@ -1,6 +1,5 @@
 package org.edx.mobile.util;
 
-
 import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
@@ -13,20 +12,31 @@ import org.edx.mobile.module.prefs.PrefManager;
 import java.io.File;
 import java.util.Collections;
 
-public abstract class SecurityUtil {
+/**
+ * Utility class that deals with the security of a user's personal information data.
+ */
+public class SecurityUtil {
     private static final Logger logger = new Logger(SecurityUtil.class);
 
+    private SecurityUtil() {
+    }
+
+    /**
+     * Clears the app's data directory, external storage directory and shared preferences with the
+     * exceptions of downloaded videos and app's database.
+     *
+     * @param context The current context.
+     */
     public static void clearUserData(@NonNull Context context) {
-        // Clear the App's directory
+        // Clear the data directory
         PackageManager packageManager = context.getPackageManager();
         try {
             PackageInfo packageInfo = packageManager.getPackageInfo(context.getPackageName(), 0);
-            File appDir = new File(packageInfo.applicationInfo.dataDir);
-            if (appDir.exists() && appDir.isDirectory()) {
-                File[] children = appDir.listFiles();
-                for (int size = children.length, i = 0; i < size; i++) {
-                    FileUtil.deleteRecursive(children[i],
-                            Collections.singletonList(DbStructure.NAME));
+            File dataDir = new File(packageInfo.applicationInfo.dataDir);
+            File[] filesList = dataDir.listFiles();
+            if (filesList != null) {
+                for (final File child : filesList) {
+                    FileUtil.deleteRecursive(child, Collections.singletonList(DbStructure.NAME));
                 }
             }
         } catch (PackageManager.NameNotFoundException e) {
@@ -35,12 +45,11 @@ public abstract class SecurityUtil {
         }
 
         // Now clear the App's external storage directory
-        File externalDir = new File(context.getExternalFilesDir(null).getParent());
-        if (externalDir.exists() && externalDir.isDirectory()) {
-            File[] children = externalDir.listFiles();
-            for (int size = children.length, i = 0; i < size; i++) {
-                FileUtil.deleteRecursive(children[i],
-                        Collections.singletonList(AppConstants.Folders.VIDEOS));
+        File externalFilesDir = FileUtil.getAppExternalDir(context);
+        File[] filesList = externalFilesDir.listFiles();
+        if (filesList != null) {
+            for (final File child : filesList) {
+                FileUtil.deleteRecursive(child, Collections.singletonList(AppConstants.Directories.VIDEOS));
             }
         }
 

@@ -266,6 +266,11 @@ public class PrefManager {
         public static final String AppSettingNeedSyncWithParse = "AppSettingNeedSyncWithParse";
         public static final String UserPrefVideoModel = "UserPrefVideoModel";
         public static final String LAST_COURSE_STRUCTURE_FETCH = "LastCourseStructureFetch";
+        /**
+         * For downloaded videos to appear in order on the My Videos screen, we need
+         * to have the videos' courses data cached. By querying the value of this key
+         * we can know if the cache has been restored or not.
+         */
         public static final String VIDEOS_CACHE_RESTORED = "VideosCacheRestored";
 
 
@@ -280,7 +285,7 @@ public class PrefManager {
     }
 
     /**
-     * Clears all the shared preferences being used in app.
+     * Clears all the shared preferences that are being used in app.
      */
     public static void nukeSharedPreferences() {
         for (String prefName : Pref.getAll()) {
