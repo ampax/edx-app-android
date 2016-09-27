@@ -1,8 +1,8 @@
 package org.edx.mobile.util;
 
 import android.content.Context;
-import android.os.Environment;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -83,17 +83,9 @@ public class FileUtil {
      * @param context The current context.
      * @return App's external storage directory.
      */
-    @NonNull
+    @Nullable
     public static File getAppExternalDir(@NonNull Context context) {
         File externalFilesDir = context.getExternalFilesDir(null);
-        if (externalFilesDir != null) {
-            return externalFilesDir.getParentFile();
-        } else {
-            File android = new File(Environment.getExternalStorageDirectory(), "Android");
-            File downloadsDir = new File(android, "data");
-            File packageDir = new File(downloadsDir, context.getPackageName());
-            packageDir.mkdirs();
-            return packageDir;
-        }
+        return (externalFilesDir != null ? externalFilesDir.getParentFile() : null);
     }
 }

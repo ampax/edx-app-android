@@ -77,98 +77,102 @@ class DbHelper extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        db.beginTransaction();
         try {
             String upgradeToV2 =
-                    "ALTER TABLE "    + DbStructure.Table.DOWNLOADS + " ADD COLUMN "
-                                      + DbStructure.Column.UNIT_URL + " TEXT ";
+                    "ALTER TABLE " + DbStructure.Table.DOWNLOADS + " ADD COLUMN "
+                            + DbStructure.Column.UNIT_URL + " TEXT ";
 
-            String[] upgradeToV3 = new String[] {
-                    "ALTER TABLE "    + DbStructure.Table.DOWNLOADS + " ADD COLUMN "
-                                      + DbStructure.Column.URL_HIGH_QUALITY + " TEXT ",
+            String[] upgradeToV3 = new String[]{
+                    "ALTER TABLE " + DbStructure.Table.DOWNLOADS + " ADD COLUMN "
+                            + DbStructure.Column.URL_HIGH_QUALITY + " TEXT ",
 
-                    "ALTER TABLE "    + DbStructure.Table.DOWNLOADS + " ADD COLUMN "
-                                      + DbStructure.Column.URL_LOW_QUALITY + " TEXT ",
+                    "ALTER TABLE " + DbStructure.Table.DOWNLOADS + " ADD COLUMN "
+                            + DbStructure.Column.URL_LOW_QUALITY + " TEXT ",
 
-                    "ALTER TABLE "    + DbStructure.Table.DOWNLOADS + " ADD COLUMN "
-                                      + DbStructure.Column.URL_YOUTUBE + " TEXT "};
+                    "ALTER TABLE " + DbStructure.Table.DOWNLOADS + " ADD COLUMN "
+                            + DbStructure.Column.URL_YOUTUBE + " TEXT "};
 
             String upgradeToV4 =
-                    "ALTER TABLE "    + DbStructure.Table.DOWNLOADS + " ADD COLUMN "
+                    "ALTER TABLE " + DbStructure.Table.DOWNLOADS + " ADD COLUMN "
                             + DbStructure.Column.VIDEO_FOR_WEB_ONLY + " BOOLEAN ";
 
-            if ( oldVersion == 1 ) {
+            if (oldVersion == 1) {
                 // upgrade from 1 to 2
                 db.execSQL(upgradeToV2);
             }
 
-            if ( oldVersion < 3 ) {
+            if (oldVersion < 3) {
                 // upgrade to version 3
                 for (String query : upgradeToV3) {
                     db.execSQL(query);
                 }
             }
 
-            if ( oldVersion < 4 ) {
+            if (oldVersion < 4) {
                 // upgrade to version 4
                 db.execSQL(upgradeToV4);
             }
 
-            if ( oldVersion < 5 ){
+            if (oldVersion < 5) {
                 createAssessmentTable(db);
             }
 
             if (oldVersion < 6) {
-                Cursor cursor = db.query(false, DbStructure.Table.DOWNLOADS,
-                        new String[]{DbStructure.Column.ID, DbStructure.Column.USERNAME,
-                                DbStructure.Column.FILEPATH}, null, null, null, null, null, null);
-                if (cursor != null) {
-                    final File appExternalDir = FileUtil.getAppExternalDir(context);
-                    try {
-                        while (cursor.moveToNext()) {
-                            final String id = cursor.getString(0);
-                            final String username = cursor.getString(1);
-                            final String filePath = cursor.getString(2);
-                            final String encryptedUsername = Sha1Util.SHA1(username);
-                            final String newFilePath = filePath.replace(
-                                    appExternalDir.getAbsolutePath() + "/" + username,
-                                    appExternalDir.getAbsolutePath() + "/"
-                                            + AppConstants.Directories.VIDEOS + "/"
-                                            + encryptedUsername);
+                final File appExternalDir = FileUtil.getAppExternalDir(context);
+                if (appExternalDir != null) {
+                    Cursor cursor = db.query(false, DbStructure.Table.DOWNLOADS,
+                            new String[]{DbStructure.Column.ID, DbStructure.Column.USERNAME,
+                                    DbStructure.Column.FILEPATH}, null, null, null, null, null, null);
+                    if (cursor != null) {
+                        try {
+                            while (cursor.moveToNext()) {
+                                final String id = cursor.getString(0);
+                                final String username = cursor.getString(1);
+                                final String filePath = cursor.getString(2);
+                                final String encryptedUsername = Sha1Util.SHA1(username);
+                                final String newFilePath = filePath.replace(
+                                        appExternalDir.getAbsolutePath() + "/" + username,
+                                        appExternalDir.getAbsolutePath() + "/"
+                                                + AppConstants.Directories.VIDEOS + "/"
+                                                + encryptedUsername);
 
-                            // First update the directory name along with its whole path
-                            final File previousDir = new File(appExternalDir, username);
-                            if (previousDir.exists()) {
-                                final File newDir = new File(appExternalDir,
-                                        AppConstants.Directories.VIDEOS + "/" + encryptedUsername);
-                                if (!newDir.exists()) newDir.mkdirs();
-                                previousDir.renameTo(newDir);
+                                // First update the directory name along with its whole path
+                                final File previousDir = new File(appExternalDir, username);
+                                if (previousDir.exists()) {
+                                    final File newDir = new File(appExternalDir,
+                                            AppConstants.Directories.VIDEOS + "/" + encryptedUsername);
+                                    if (!newDir.exists()) newDir.mkdirs();
+                                    previousDir.renameTo(newDir);
+                                }
+
+                                // Then update the database row
+                                final ContentValues updatedValues = new ContentValues();
+                                updatedValues.put(DbStructure.Column.USERNAME, encryptedUsername);
+                                updatedValues.put(DbStructure.Column.FILEPATH, newFilePath);
+                                db.update(DbStructure.Table.DOWNLOADS, updatedValues,
+                                        DbStructure.Column.ID + "= ?", new String[]{id});
                             }
-
-                            // Then update the database row
-                            final ContentValues updatedValues = new ContentValues();
-                            updatedValues.put(DbStructure.Column.USERNAME, encryptedUsername);
-                            updatedValues.put(DbStructure.Column.FILEPATH, newFilePath);
-                            db.update(DbStructure.Table.DOWNLOADS, updatedValues,
-                                    DbStructure.Column.ID + "= ?", new String[]{id});
+                        } finally {
+                            cursor.close();
                         }
-                    } finally {
-                        cursor.close();
-                    }
 
-                    // Now migrate the subtitles directory
-                    final File previousSrtDir = new File(appExternalDir, "srtFolder");
-                    if (previousSrtDir.exists()) {
-                        final File newSrtDir = new File(appExternalDir,
-                                AppConstants.Directories.VIDEOS + "/" + AppConstants.Directories.SUBTITLES);
-                        newSrtDir.mkdirs();
-                        previousSrtDir.renameTo(newSrtDir);
+                        // Now migrate the subtitles directory
+                        final File previousSrtDir = new File(appExternalDir, "srtFolder");
+                        if (previousSrtDir.exists()) {
+                            final File newSrtDir = new File(appExternalDir,
+                                    AppConstants.Directories.VIDEOS + "/" + AppConstants.Directories.SUBTITLES);
+                            newSrtDir.mkdirs();
+                            previousSrtDir.renameTo(newSrtDir);
+                        }
                     }
                 }
-            }
 
-            logger.debug("Database upgraded from " + oldVersion + " to " + newVersion);
-        }catch(Exception e){
-            logger.error(e);
+                logger.debug("Database upgraded from " + oldVersion + " to " + newVersion);
+                db.setTransactionSuccessful();
+            }
+        } finally {
+            db.endTransaction();
         }
     }
 

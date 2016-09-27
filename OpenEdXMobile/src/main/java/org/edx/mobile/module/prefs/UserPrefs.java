@@ -11,6 +11,7 @@ import com.google.inject.Singleton;
 import org.edx.mobile.logger.Logger;
 import org.edx.mobile.model.api.ProfileModel;
 import org.edx.mobile.util.AppConstants;
+import org.edx.mobile.util.FileUtil;
 import org.edx.mobile.util.Sha1Util;
 
 import java.io.File;
@@ -51,21 +52,26 @@ public class UserPrefs {
      *
      * @return
      */
-    public File getDownloadFolder() {
-        ProfileModel profile = getProfile();
-        File videosDir = new File(context.getExternalFilesDir(null).getParent(), AppConstants.Directories.VIDEOS);
-        File usersVidsDir = new File(videosDir, Sha1Util.SHA1(profile.username));
-        usersVidsDir.mkdirs();
-        try {
-            File noMediaFile = new File(usersVidsDir, ".nomedia");
-            if (!noMediaFile.exists()) {
-                noMediaFile.createNewFile();
+    @Nullable
+    public File getDownloadDirectory() {
+        final File appExternalDir = FileUtil.getAppExternalDir(context);
+        final ProfileModel profile = getProfile();
+        if (appExternalDir != null && profile != null) {
+            File videosDir = new File(appExternalDir, AppConstants.Directories.VIDEOS);
+            File usersVidsDir = new File(videosDir, Sha1Util.SHA1(profile.username));
+            usersVidsDir.mkdirs();
+            try {
+                File noMediaFile = new File(usersVidsDir, ".nomedia");
+                if (!noMediaFile.exists()) {
+                    noMediaFile.createNewFile();
+                }
+            } catch (IOException ioException) {
+                logger.error(ioException);
             }
-        } catch (IOException ioException) {
-            logger.error(ioException);
-        }
 
-        return usersVidsDir;
+            return usersVidsDir;
+        }
+        return null;
     }
 
     @Nullable

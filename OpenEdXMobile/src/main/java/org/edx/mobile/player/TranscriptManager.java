@@ -1,6 +1,7 @@
 package org.edx.mobile.player;
 
 import android.content.Context;
+import android.support.annotation.Nullable;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
@@ -9,6 +10,7 @@ import org.edx.mobile.R;
 import org.edx.mobile.logger.Logger;
 import org.edx.mobile.model.api.TranscriptModel;
 import org.edx.mobile.util.AppConstants;
+import org.edx.mobile.util.FileUtil;
 import org.edx.mobile.util.IOUtils;
 import org.edx.mobile.util.Sha1Util;
 import org.edx.mobile.util.TranscriptDownloader;
@@ -23,17 +25,12 @@ import java.util.LinkedHashMap;
 
 @Singleton
 public class TranscriptManager {
-
-    private File transcriptFolder;
-    private Context context;
     private final Logger logger = new Logger(getClass().getName());
+    private Context context;
 
     @Inject
     public TranscriptManager(Context context) {
         this.context = context;
-        File videosDir = new File(context.getExternalFilesDir(null).getParent(), AppConstants.Directories.VIDEOS);
-        transcriptFolder = new File(videosDir, AppConstants.Directories.SUBTITLES);
-        transcriptFolder.mkdirs();
     }
 
     /**
@@ -42,8 +39,11 @@ public class TranscriptManager {
      * @return
      */
     public boolean has(String url) {
+        final File transcriptDir = getTranscriptDir();
+        if (transcriptDir == null) return false;
+
         String hash = Sha1Util.SHA1(url);
-        File file = new File(transcriptFolder, hash);
+        File file = new File(transcriptDir, hash);
         return file.exists();
     }
 
@@ -55,8 +55,11 @@ public class TranscriptManager {
      * @throws IOException
      */
     public void put(String url, String response) throws IOException {
+        final File transcriptDir = getTranscriptDir();
+        if (transcriptDir == null) throw new IOException("Transcript directory doesn't exist");
+
         String hash = Sha1Util.SHA1(url);
-        File file = new File(transcriptFolder, hash);
+        File file = new File(transcriptDir, hash);
         FileOutputStream out = new FileOutputStream(file);
         out.write(response.getBytes());
         out.close();
@@ -70,8 +73,11 @@ public class TranscriptManager {
      * @throws IOException
      */
     public String get(String url) throws IOException {
+        final File transcriptDir = getTranscriptDir();
+        if (transcriptDir == null) throw new IOException("Transcript directory doesn't exist");
+
         String hash = Sha1Util.SHA1(url);
-        File file = new File(transcriptFolder, hash);
+        File file = new File(transcriptDir, hash);
         if (!file.exists()) {
             // not in cache
             return null;
@@ -92,8 +98,11 @@ public class TranscriptManager {
      * @throws IOException
      */
     public InputStream getInputStream(String url) throws IOException {
+        final File transcriptDir = getTranscriptDir();
+        if (transcriptDir == null) throw new IOException("Transcript directory doesn't exist");
+
         String hash = Sha1Util.SHA1(url);
-        File file = new File(transcriptFolder, hash);
+        File file = new File(transcriptDir, hash);
         if (!file.exists()) {
             // not in cache
             return null;
@@ -108,7 +117,7 @@ public class TranscriptManager {
      * @param downloadLink
      */
     public void startTranscriptDownload(final String downloadLink) {
-        //Uri target = Uri.fromFile(new File(transcriptFolder, Sha1Util.SHA1(downloadLink)));
+        //Uri target = Uri.fromFile(new File(transcriptDir, Sha1Util.SHA1(downloadLink)));
         if(downloadLink==null){
             return;
         }
@@ -231,6 +240,18 @@ public class TranscriptManager {
             }
         } catch (IOException e) {
             logger.error(e);
+        }
+        return null;
+    }
+
+    @Nullable
+    private File getTranscriptDir() {
+        final File appExternalDir = FileUtil.getAppExternalDir(context);
+        if (appExternalDir != null) {
+            final File videosDir = new File(appExternalDir, AppConstants.Directories.VIDEOS);
+            final File transcriptDir = new File(videosDir, AppConstants.Directories.SUBTITLES);
+            transcriptDir.mkdirs();
+            return transcriptDir;
         }
         return null;
     }
