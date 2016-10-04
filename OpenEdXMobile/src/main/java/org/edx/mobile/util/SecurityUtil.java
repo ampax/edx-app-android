@@ -13,17 +13,19 @@ import java.io.File;
 import java.util.Collections;
 
 /**
- * Utility class that deals with the security of a user's personal information data.
+ * Utility class dealing with the security of a user's personal information data.
  */
 public class SecurityUtil {
     private static final Logger logger = new Logger(SecurityUtil.class);
 
+    // Make this class non-instantiable
     private SecurityUtil() {
+        throw new UnsupportedOperationException();
     }
 
     /**
-     * Clears the app's data directory, external storage directory and shared preferences with the
-     * exceptions of downloaded videos and app's database.
+     * Clears the app's data directory, external storage directory and shared preferences,
+     * with the exceptions of downloaded videos and videos database.
      *
      * @param context The current context.
      */
@@ -45,8 +47,8 @@ public class SecurityUtil {
         }
 
         // Now clear the App's external storage directory
-        File externalFilesDir = FileUtil.getAppExternalDir(context);
-        File[] filesList = externalFilesDir.listFiles();
+        File externalAppDir = FileUtil.getExternalAppDir(context);
+        File[] filesList = externalAppDir.listFiles();
         if (filesList != null) {
             for (final File child : filesList) {
                 FileUtil.deleteRecursive(child, Collections.singletonList(AppConstants.Directories.VIDEOS));

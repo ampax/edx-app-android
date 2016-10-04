@@ -26,7 +26,7 @@ import java.util.LinkedHashMap;
 @Singleton
 public class TranscriptManager {
     private final Logger logger = new Logger(getClass().getName());
-    private Context context;
+    private final Context context;
 
     @Inject
     public TranscriptManager(Context context) {
@@ -56,7 +56,7 @@ public class TranscriptManager {
      */
     public void put(String url, String response) throws IOException {
         final File transcriptDir = getTranscriptDir();
-        if (transcriptDir == null) throw new IOException("Transcript directory doesn't exist");
+        if (transcriptDir == null) throw new IOException("Transcript directory not found");
 
         String hash = Sha1Util.SHA1(url);
         File file = new File(transcriptDir, hash);
@@ -74,7 +74,7 @@ public class TranscriptManager {
      */
     public String get(String url) throws IOException {
         final File transcriptDir = getTranscriptDir();
-        if (transcriptDir == null) throw new IOException("Transcript directory doesn't exist");
+        if (transcriptDir == null) throw new IOException("Transcript directory not found");
 
         String hash = Sha1Util.SHA1(url);
         File file = new File(transcriptDir, hash);
@@ -99,7 +99,7 @@ public class TranscriptManager {
      */
     public InputStream getInputStream(String url) throws IOException {
         final File transcriptDir = getTranscriptDir();
-        if (transcriptDir == null) throw new IOException("Transcript directory doesn't exist");
+        if (transcriptDir == null) throw new IOException("Transcript directory not found");
 
         String hash = Sha1Util.SHA1(url);
         File file = new File(transcriptDir, hash);
@@ -246,9 +246,9 @@ public class TranscriptManager {
 
     @Nullable
     private File getTranscriptDir() {
-        final File appExternalDir = FileUtil.getAppExternalDir(context);
-        if (appExternalDir != null) {
-            final File videosDir = new File(appExternalDir, AppConstants.Directories.VIDEOS);
+        final File externalAppDir = FileUtil.getExternalAppDir(context);
+        if (externalAppDir != null) {
+            final File videosDir = new File(externalAppDir, AppConstants.Directories.VIDEOS);
             final File transcriptDir = new File(videosDir, AppConstants.Directories.SUBTITLES);
             transcriptDir.mkdirs();
             return transcriptDir;

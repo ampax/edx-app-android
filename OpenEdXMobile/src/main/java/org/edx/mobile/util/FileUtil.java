@@ -12,11 +12,25 @@ import java.io.OutputStream;
 import java.util.Collections;
 import java.util.List;
 
-/**
- * Created by miankhalid on 8/3/15.
- */
 public class FileUtil {
     private static final int DEFAULT_BUFFER_SIZE = 1024 * 4;
+
+    // Make this class non-instantiable
+    private FileUtil() {
+        throw new UnsupportedOperationException();
+    }
+
+    /**
+     * Utility function for getting the app's external storage directory.
+     *
+     * @param context The current context.
+     * @return The app's external storage directory.
+     */
+    @Nullable
+    public static File getExternalAppDir(@NonNull Context context) {
+        File externalFilesDir = context.getExternalFilesDir(null);
+        return (externalFilesDir != null ? externalFilesDir.getParentFile() : null);
+    }
 
     /**
      * Returns the text of a file as a String object
@@ -61,7 +75,7 @@ public class FileUtil {
      */
     public static void deleteRecursive(@NonNull File fileOrDirectory,
                                        @NonNull List<String> exceptions) {
-        if (exceptions.size() > 0 && exceptions.contains(fileOrDirectory.getName())) return;
+        if (exceptions.contains(fileOrDirectory.getName())) return;
 
         if (fileOrDirectory.isDirectory()) {
             File[] filesList = fileOrDirectory.listFiles();
@@ -72,20 +86,8 @@ public class FileUtil {
             }
         }
 
-        // Ignoring the result, since we don't want to break the recursion on encountering an error
+        // Don't break the recursion upon encountering an error
         // noinspection ResultOfMethodCallIgnored
         fileOrDirectory.delete();
-    }
-
-    /**
-     * Utility function for getting app's external storage directory.
-     *
-     * @param context The current context.
-     * @return App's external storage directory.
-     */
-    @Nullable
-    public static File getAppExternalDir(@NonNull Context context) {
-        File externalFilesDir = context.getExternalFilesDir(null);
-        return (externalFilesDir != null ? externalFilesDir.getParentFile() : null);
     }
 }

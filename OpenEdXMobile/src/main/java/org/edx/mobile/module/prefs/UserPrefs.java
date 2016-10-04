@@ -54,10 +54,10 @@ public class UserPrefs {
      */
     @Nullable
     public File getDownloadDirectory() {
-        final File appExternalDir = FileUtil.getAppExternalDir(context);
+        final File externalAppDir = FileUtil.getExternalAppDir(context);
         final ProfileModel profile = getProfile();
-        if (appExternalDir != null && profile != null) {
-            File videosDir = new File(appExternalDir, AppConstants.Directories.VIDEOS);
+        if (externalAppDir != null && profile != null) {
+            File videosDir = new File(externalAppDir, AppConstants.Directories.VIDEOS);
             File usersVidsDir = new File(videosDir, Sha1Util.SHA1(profile.username));
             usersVidsDir.mkdirs();
             try {

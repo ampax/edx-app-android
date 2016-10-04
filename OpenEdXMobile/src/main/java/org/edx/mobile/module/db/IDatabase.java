@@ -1,5 +1,7 @@
 package org.edx.mobile.module.db;
 
+import android.support.annotation.Nullable;
+
 import org.edx.mobile.model.VideoModel;
 import org.edx.mobile.model.db.DownloadEntry.DownloadedState;
 import org.edx.mobile.model.db.DownloadEntry.WatchedState;
@@ -471,6 +473,6 @@ public interface IDatabase {
     /**
      * Get the list of course ids for which a specific user has downloaded atleast 1 video.
      */
-    List<String> getUniqueCourseIdsForDownloadedVideos(DataCallback<List<String>> callback);
+    List<String> getUniqueCourseIdsForDownloadedVideos(@Nullable DataCallback<List<String>> callback);
 
 }

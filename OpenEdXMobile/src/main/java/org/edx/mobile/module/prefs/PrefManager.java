@@ -268,8 +268,8 @@ public class PrefManager {
         public static final String LAST_COURSE_STRUCTURE_FETCH = "LastCourseStructureFetch";
         /**
          * For downloaded videos to appear in order on the My Videos screen, we need
-         * to have the videos' courses data cached. By querying the value of this key
-         * we can know if the cache has been restored or not.
+         * to have the videos' courses data cached. This is the key to a persistent
+         * flag which marks whether the cache has been restored
          */
         public static final String VIDEOS_CACHE_RESTORED = "VideosCacheRestored";
 
@@ -285,7 +285,7 @@ public class PrefManager {
     }
 
     /**
-     * Clears all the shared preferences that are being used in app.
+     * Clears all the shared preferences that are used in the app.
      */
     public static void nukeSharedPreferences() {
         for (String prefName : Pref.getAll()) {

@@ -13,15 +13,17 @@ public enum AppConstants {
     public static final double MILLISECONDS_PER_SECOND = 1000.00;
 
     /**
-     * Defines the name of various directories we are using in this app.
+     * This class defines the names of various directories which are used for
+     * storing application data.
      */
     public static final class Directories {
         /**
-         * The directory in which we store downloaded videos.
+         * The name of the directory which is used to store downloaded videos.
          */
         public static final String VIDEOS = "videos";
         /**
-         * The directory in which we store subtitles of the downloaded videos.
+         * The name of the directory which is used to store subtitles of the
+         * downloaded videos.
          */
         public static final String SUBTITLES = "subtitles";
     }
