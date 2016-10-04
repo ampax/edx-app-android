@@ -62,9 +62,7 @@ public class UserPrefs {
             usersVidsDir.mkdirs();
             try {
                 File noMediaFile = new File(usersVidsDir, ".nomedia");
-                if (!noMediaFile.exists()) {
-                    noMediaFile.createNewFile();
-                }
+                noMediaFile.createNewFile();
             } catch (IOException ioException) {
                 logger.error(ioException);
             }

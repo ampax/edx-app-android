@@ -130,25 +130,25 @@ class DbHelper extends SQLiteOpenHelper {
                                 final String id = cursor.getString(0);
                                 final String username = cursor.getString(1);
                                 final String filePath = cursor.getString(2);
-                                final String encryptedUsername = Sha1Util.SHA1(username);
+                                final String hashedUsername = Sha1Util.SHA1(username);
                                 final String newFilePath = filePath.replace(
                                         appExternalDir.getAbsolutePath() + "/" + username,
                                         appExternalDir.getAbsolutePath() + "/"
                                                 + AppConstants.Directories.VIDEOS + "/"
-                                                + encryptedUsername);
+                                                + hashedUsername);
 
                                 // First update the directory name along with its whole path
                                 final File previousDir = new File(appExternalDir, username);
                                 if (previousDir.exists()) {
                                     final File newDir = new File(appExternalDir,
-                                            AppConstants.Directories.VIDEOS + "/" + encryptedUsername);
-                                    if (!newDir.exists()) newDir.mkdirs();
+                                            AppConstants.Directories.VIDEOS + "/" + hashedUsername);
+                                    newDir.mkdirs();
                                     previousDir.renameTo(newDir);
                                 }
 
                                 // Then update the database row
                                 final ContentValues updatedValues = new ContentValues();
-                                updatedValues.put(DbStructure.Column.USERNAME, encryptedUsername);
+                                updatedValues.put(DbStructure.Column.USERNAME, hashedUsername);
                                 updatedValues.put(DbStructure.Column.FILEPATH, newFilePath);
                                 db.update(DbStructure.Table.DOWNLOADS, updatedValues,
                                         DbStructure.Column.ID + "= ?", new String[]{id});

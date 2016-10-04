@@ -57,7 +57,7 @@ public class FileUtil {
      * Deletes a file or directory and all its content recursively.
      *
      * @param fileOrDirectory The file or directory that needs to be deleted.
-     * @param exceptions      Names of the file/directory that needs to be skipped while deletion.
+     * @param exceptions      Names of the files or directories that need to be skipped while deletion.
      */
     public static void deleteRecursive(@NonNull File fileOrDirectory,
                                        @NonNull List<String> exceptions) {

@@ -12,8 +12,8 @@ public class Sha1Util {
     private static final Logger logger = new Logger(Sha1Util.class);
 
     /**
-     * @param text The plain text to encrypt.
-     * @return SHA1 hash of the given text or the plain text if encryption failed.
+     * @param text The plain text to hash.
+     * @return SHA1 hash of the given text or the plain text if hashing failed.
      */
     public static String SHA1(@NonNull String text) {
         try {
