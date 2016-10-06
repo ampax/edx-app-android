@@ -24,6 +24,7 @@ import org.edx.mobile.module.notification.NotificationDelegate;
 import org.edx.mobile.module.prefs.LoginPrefs;
 import org.edx.mobile.profiles.UserProfileActivity;
 import org.edx.mobile.util.Config;
+import org.edx.mobile.util.SecurityUtil;
 import org.edx.mobile.view.dialog.WebViewDialogActivity;
 import org.edx.mobile.view.my_videos.MyVideosActivity;
 
@@ -264,11 +265,14 @@ public class Router {
     }
 
     /**
-     * this method can be called either through UI [ user clicks LOGOUT button],
-     * or programmatically
+     * This method should only be called internally if we want to forcefully logout a user.
+     *
+     * @param context  The context.
+     * @param segment  Segment object's reference.
+     * @param delegate The notification delegate.
+     * @see  #performManualLogout(Context, ISegment, NotificationDelegate)
      */
     public void forceLogout(Context context, ISegment segment, NotificationDelegate delegate) {
-        loginAPI.logOut();
         loginPrefs.clear();
 
         EventBus.getDefault().post(new LogoutEvent());
@@ -279,6 +283,20 @@ public class Router {
         delegate.unsubscribeAll();
 
         showSplashScreen(context);
+    }
+
+    /**
+     * This method should be called in response to a user's action like clicking the logout button.
+     *
+     * @param context  The context.
+     * @param segment  Segment object's reference.
+     * @param delegate The notification delegate.
+     * @see  #forceLogout(Context, ISegment, NotificationDelegate)
+     */
+    public void performManualLogout(Context context, ISegment segment, NotificationDelegate delegate) {
+        loginAPI.logOut();
+        forceLogout(context, segment, delegate);
+        SecurityUtil.clearUserData(context);
     }
 
     public void showHandouts(Activity activity, EnrolledCoursesResponse courseData) {
