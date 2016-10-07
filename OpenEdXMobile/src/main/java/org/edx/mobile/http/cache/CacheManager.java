@@ -1,6 +1,7 @@
 package org.edx.mobile.http.cache;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.google.inject.Inject;
@@ -19,10 +20,12 @@ import java.nio.charset.Charset;
 @Singleton
 public class CacheManager {
     private final Logger logger = new Logger(getClass().getName());
+
+    @NonNull
     private final Context context;
 
     @Inject
-    public CacheManager(Context context) {
+    public CacheManager(@NonNull Context context) {
         this.context = context;
     }
 

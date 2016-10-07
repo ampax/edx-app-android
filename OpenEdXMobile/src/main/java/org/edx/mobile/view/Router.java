@@ -265,12 +265,14 @@ public class Router {
     }
 
     /**
-     * This method should only be called internally if we want to forcefully logout a user.
+     * Clear the login data and exit to the splash screen. This should only be called internally;
+     * for handling manual logout,
+     * {@link #performManualLogout(Context, ISegment, NotificationDelegate)} should be used instead.
      *
      * @param context  The context.
-     * @param segment  Segment object's reference.
+     * @param segment  The segment object.
      * @param delegate The notification delegate.
-     * @see  #performManualLogout(Context, ISegment, NotificationDelegate)
+     * @see #performManualLogout(Context, ISegment, NotificationDelegate)
      */
     public void forceLogout(Context context, ISegment segment, NotificationDelegate delegate) {
         loginPrefs.clear();
@@ -286,12 +288,15 @@ public class Router {
     }
 
     /**
-     * This method should be called in response to a user's action like clicking the logout button.
+     * Clears all the user data, revokes the refresh and access tokens, and exit to the splash
+     * screen. This should only be called in response to manual logout by the user; for performing
+     * logout internally (e.g. in response to refresh token expiration),
+     * {@link #forceLogout(Context, ISegment, NotificationDelegate)} should be used instead.
      *
      * @param context  The context.
-     * @param segment  Segment object's reference.
+     * @param segment  The segment object.
      * @param delegate The notification delegate.
-     * @see  #forceLogout(Context, ISegment, NotificationDelegate)
+     * @see #forceLogout(Context, ISegment, NotificationDelegate)
      */
     public void performManualLogout(Context context, ISegment segment, NotificationDelegate delegate) {
         loginAPI.logOut();

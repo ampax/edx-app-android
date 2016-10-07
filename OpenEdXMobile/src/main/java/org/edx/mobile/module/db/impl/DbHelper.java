@@ -143,11 +143,11 @@ class DbHelper extends SQLiteOpenHelper {
                                 final String hashedUsername = Sha1Util.SHA1(username);
                                 final String newFilePath = filePath.replaceFirst(
                                         "^" + TextUtils.join("/", Arrays.<CharSequence>asList(
-                                                previousAppDirPath, username)),
+                                                previousAppDirPath, username)) + "/",
                                         TextUtils.join("/", Arrays.<CharSequence>asList(
                                                 externalAppDir.getAbsolutePath(),
                                                 AppConstants.Directories.VIDEOS,
-                                                hashedUsername)).toString());
+                                                hashedUsername)) + "/");
 
                                 // First update the name and path of the videos directory
                                 final File previousDir = new File(externalAppDir, username);
@@ -158,6 +158,8 @@ class DbHelper extends SQLiteOpenHelper {
                                                     hashedUsername)).toString());
                                     if (!((newDir.mkdirs() || newDir.exists()) &&
                                             previousDir.renameTo(newDir))) {
+                                        db.delete(DbStructure.Table.DOWNLOADS,
+                                                DbStructure.Column.ID + "= ?", new String[]{id});
                                         continue;
                                     }
                                 }
@@ -182,10 +184,10 @@ class DbHelper extends SQLiteOpenHelper {
                             previousSrtDir.renameTo(newSrtDir);
                         }
                     }
+                    db.setTransactionSuccessful();
+                    logger.debug("Database upgraded from " + oldVersion + " to " + newVersion);
                 }
 
-                logger.debug("Database upgraded from " + oldVersion + " to " + newVersion);
-                db.setTransactionSuccessful();
             } finally {
                 db.endTransaction();
             }
