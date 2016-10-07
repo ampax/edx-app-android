@@ -163,13 +163,13 @@ android {
     }
 
     defaultConfig {
-        applicationId "org.edx.mobile"
+        applicationId "org.edlynx.mobile"
         // minimum version is Android 4.0
         minSdkVersion 14
         targetSdkVersion 21
 
-        versionCode 84
-        versionName "2.5.0"
+        versionCode 2
+        versionName "2.0.0"
 
         renderscriptTargetApi 22
         renderscriptSupportModeEnabled true
