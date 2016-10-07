@@ -1,6 +1,7 @@
 package org.edx.mobile.http.cache;
 
 import android.content.Context;
+import android.support.annotation.Nullable;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
@@ -17,30 +18,29 @@ import java.nio.charset.Charset;
 
 @Singleton
 public class CacheManager {
-
-    private File cacheFolder;
-    protected final Logger logger = new Logger(getClass().getName());
+    private final Logger logger = new Logger(getClass().getName());
+    private final Context context;
 
     @Inject
     public CacheManager(Context context) {
-        if (context == null) {
-            logger.warn("Context must not be NULL");
-        }
-        cacheFolder = new File(context.getFilesDir(), "http-cache");
-        if (!cacheFolder.exists()) {
-            cacheFolder.mkdirs();
-        }
+        this.context = context;
     }
 
     public boolean has(String url) {
+        final File cacheDir = getCacheDir();
+        if (cacheDir == null) return false;
+
         String hash = Sha1Util.SHA1(url);
-        File file = new File(cacheFolder, hash);
+        File file = new File(cacheDir, hash);
         return file.exists();
     }
 
     public void put(String url, String response) throws IOException {
+        final File cacheDir = getCacheDir();
+        if (cacheDir == null) throw new IOException("Cache directory not found");
+
         String hash = Sha1Util.SHA1(url);
-        File file = new File(cacheFolder, hash);
+        File file = new File(cacheDir, hash);
         FileOutputStream out = new FileOutputStream(file);
         out.write(response.getBytes());
         out.close();
@@ -48,8 +48,11 @@ public class CacheManager {
     }
 
     public String get(String url) throws IOException {
+        final File cacheDir = getCacheDir();
+        if (cacheDir == null) throw new IOException("Cache directory not found");
+
         String hash = Sha1Util.SHA1(url);
-        File file = new File(cacheFolder, hash);
+        File file = new File(cacheDir, hash);
 
         if (!file.exists()) {
             logger.debug("Cache.get failed, not cached");
@@ -62,5 +65,16 @@ public class CacheManager {
         in.close();
         logger.debug("Cache.get = " + hash);
         return cache;
+    }
+
+    @Nullable
+    private File getCacheDir() {
+        final File appDir = context.getFilesDir();
+        if (appDir != null) {
+            final File cacheDir = new File(appDir, "http-cache");
+            cacheDir.mkdirs();
+            return cacheDir;
+        }
+        return null;
     }
 }
