@@ -244,9 +244,11 @@ android {
 
     buildTypes {
         debug {
-            testCoverageEnabled true
+            testCoverageEnabled false
             pseudoLocalesEnabled true // Set device language to "en_XA" to test glyphs, or "ar_XB" to test RTL support
             manifestPlaceholders = [ supportsRtl:"true"]
+            minifyEnabled false
+            shrinkResources false
         }
         debuggable.initWith(buildTypes.debug)
         debuggable {
