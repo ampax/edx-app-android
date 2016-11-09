@@ -20,8 +20,7 @@ public interface CourseService {
      *                 Which page to fetch. If not given, defaults to page 1
      */
     @GET("/api/courses/v1/courses/")
-    Page<CourseDetail> getCourseList(@Query("username") String username,
-                                     @Query("mobile") boolean mobile,
+    Page<CourseDetail> getCourseList(@Query("mobile") boolean mobile,
                                      @Query("page") int page) throws HttpException;
 
     /**
@@ -36,5 +35,5 @@ public interface CourseService {
      *                 requested by an Anonymous user.
      */
     @GET("/api/courses/v1/courses/{course_id}")
-    CourseDetail getCourseDetail(@Path("course_id") String courseId, @Query("username") String username) throws HttpException;
+    CourseDetail getCourseDetail(@Path("course_id") String courseId) throws HttpException;
 }

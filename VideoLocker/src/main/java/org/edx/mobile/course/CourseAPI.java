@@ -32,7 +32,7 @@ public class CourseAPI {
     public
     @NonNull
     Page<CourseDetail> getCourseList(int page) throws HttpException {
-        return courseService.getCourseList(getUsername(), true, page);
+        return courseService.getCourseList(true, page);
     }
 
     public
@@ -40,7 +40,7 @@ public class CourseAPI {
     CourseDetail getCourseDetail(@NonNull String courseId) throws HttpException {
         // Empty courseId will return a 200 for a list of course details, instead of a single course
         if (TextUtils.isEmpty(courseId)) throw new IllegalArgumentException();
-        return courseService.getCourseDetail(courseId, getUsername());
+        return courseService.getCourseDetail(courseId);
     }
 
     @Nullable
